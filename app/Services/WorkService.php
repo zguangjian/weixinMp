@@ -23,7 +23,7 @@ class WorkService
      * 工作时长
      * @var int
      */
-    protected static $workHour = 7;
+    public static $workHour = 7;
 
     /**
      * 午休 2小时
@@ -88,6 +88,7 @@ class WorkService
                 $work->save();
                 return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
             } else {
+                //判断是否是昨日加班
                 $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d', strtotime('-1 day'))])->first();
                 if ($work && $work->work_end == 0) {
                     $workHour = self::getWorkHour($work->work_start);
@@ -104,10 +105,18 @@ class WorkService
 
     /**
      * @param $startTime
-     * @return false|float
+     * @param $endTime
+     * @return false|float|int
      */
-    private static function getWorkHour($startTime)
+    public static function getWorkHour($startTime, $endTime)
     {
-        return round((time() - $startTime) / 60 / 60, 2) > 8 ? round((time() - $startTime) / 60 / 60, 2) - self::$midday : round((time() - $startTime) / 60 / 60, 2);
+        $hour = round(($endTime ?: time() - $startTime) / 60 / 60, 2);
+        //12点之前打卡 则扣除午间休息
+        if (date('H') < 12) {
+            return $hour > self::$workHour ? $hour - self::$midday : $hour;
+        } else {
+            return $hour;
+        }
+
     }
 }

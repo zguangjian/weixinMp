@@ -14,8 +14,8 @@ class MessageService
 {
     protected static $workType = [
         0 => "加班",
-        1 => "上班",
-        2 => "下班",
+        1 => "上班打卡",
+        2 => "下班打卡",
         3 => "加班",
         4 => "请假",
         5 => "调休",
@@ -25,18 +25,12 @@ class MessageService
 
     protected static $userId;
 
-    public static function __callStatic($name, $arguments)
-    {
-        var_dump(111);
-        return $name;
-    }
 
     public static function send($message)
     {
-        $MsgType = $message['MsgType'];
         $user = UserService::getUserCache($message['FromUserName']);
         self::$userId = $user;
-        return self::$MsgType($message);
+        return self::$message['MsgType']($message);
     }
 
     public static function event($message)
