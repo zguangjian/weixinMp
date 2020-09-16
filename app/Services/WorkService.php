@@ -11,6 +11,7 @@ namespace App\Services;
 
 
 use App\Model\Work;
+use TheSeer\Tokenizer\Exception;
 
 class WorkService
 {
@@ -66,40 +67,54 @@ class WorkService
 
     public static function punchClock($type)
     {
+
         $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->first();
 
         if ($type == 1) {
             if ($work) {
                 return "今日上班已打卡";
             } else {
-                Work::create([
-                    'userid' => self::$userId,
-                    'work_start' => time(),
-                    'createDate' => date('Y-m-d')
-                ]);
+                try {
+                    Work::create([
+                        'userid' => self::$userId,
+                        'work_start' => time(),
+                        'createDate' => date('Y-m-d')
+                    ]);
+                } catch (Exception $exception) {
+                    return $exception->getMessage();
+                }
+
                 return "上班打卡成功";
             }
         } else {
-            if ($work) {
-                $workHour = self::getWorkHour($work->work_start);
-                $work->work_end = time();
-                $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
-                $work->work_extra = $workHour >= self::$workHour ? $workHour - self::$workHour : 0;
-                $work->save();
-                return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
-            } else {
-                //判断是否是昨日加班
-                $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d', strtotime('-1 day'))])->first();
-                if ($work && $work->work_end == 0) {
+            try {
+
+                if ($work) {
+
                     $workHour = self::getWorkHour($work->work_start);
                     $work->work_end = time();
                     $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
                     $work->work_extra = $workHour >= self::$workHour ? $workHour - self::$workHour : 0;
                     $work->save();
-                    return "下班打卡成功！昨日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
+                    return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
+                } else {
+                    //判断是否是昨日加班
+                    $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d', strtotime('-1 day'))])->first();
+                    if ($work && $work->work_end == 0) {
+                        $workHour = self::getWorkHour($work->work_start);
+                        $work->work_end = time();
+                        $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
+                        $work->work_extra = $workHour >= self::$workHour ? $workHour - self::$workHour : 0;
+                        $work->save();
+                        return "下班打卡成功！昨日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
+                    }
+                    return "请先打卡上班";
                 }
-                return "请先打卡上班";
+
+            } catch (\Exception $exception) {
+                return $exception->getMessage();
             }
+
         }
     }
 
@@ -108,7 +123,7 @@ class WorkService
      * @param $endTime
      * @return false|float|int
      */
-    public static function getWorkHour($startTime, $endTime)
+    public static function getWorkHour($startTime, $endTime = "")
     {
         $hour = round(($endTime ?: time() - $startTime) / 60 / 60, 2);
         //12点之前打卡 则扣除午间休息

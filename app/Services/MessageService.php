@@ -28,9 +28,10 @@ class MessageService
 
     public static function send($message)
     {
+        $MsgType = $message['MsgType'];
         $user = UserService::getUserCache($message['FromUserName']);
         self::$userId = $user;
-        return self::$message['MsgType']($message);
+        return self::$MsgType($message);
     }
 
     public static function event($message)
@@ -40,7 +41,13 @@ class MessageService
 
     public static function text($message)
     {
-        return '收到文字消息';
+
+        if ($key = array_search($message['Content'], self::$workType)) {
+            return WorkService::word($key, self::$userId);
+        } else {
+            return '收到文字消息';
+        }
+
     }
 
     public static function image($message)
