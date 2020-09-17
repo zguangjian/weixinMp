@@ -135,7 +135,7 @@ class WorkService
     {
         $hour = round((($endTime ?: time()) - $startTime) / 60 / 60, 2);
         //12点之前打卡 则扣除午间休息
-        if (date('H') < 12 && date('H') >= 9) {
+        if (date('H', $startTime) < 12 && date('H', $startTime) >= self::$startHour) {
             return $hour > self::$workHour ? $hour - self::$midday : $hour;
         } else {
             return $hour;
