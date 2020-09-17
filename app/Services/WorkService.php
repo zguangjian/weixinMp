@@ -32,6 +32,12 @@ class WorkService
      */
     protected static $midday = 2;
 
+    /**
+     * 起始打卡时间不能
+     * @var int
+     */
+    protected static $startHour = 8;
+
     public static function word($type, $userid)
     {
 
@@ -74,6 +80,9 @@ class WorkService
             if ($work) {
                 return "今日上班已打卡";
             } else {
+                if (date('H') < self::$startHour) {
+                    return sprintf("最早%t点开始打卡.", self::$startHour);
+                }
                 try {
                     Work::create([
                         'userid' => self::$userId,
@@ -90,7 +99,6 @@ class WorkService
             try {
 
                 if ($work) {
-
                     $workHour = self::getWorkHour($work->work_start);
                     $work->work_end = time();
                     $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
