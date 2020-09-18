@@ -93,7 +93,7 @@ class WorkService
                     return $exception->getMessage();
                 }
 
-                return "上班打卡成功";
+                return "上班打卡成功,打卡时间为" . date('Y-m-d H:i:s');
             }
         } else {
             try {
