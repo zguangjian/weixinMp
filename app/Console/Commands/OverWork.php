@@ -48,7 +48,7 @@ class OverWork extends Command
         /** @var Work $work */
 
         foreach ($workList as $work) {
-            $workHour = WorkService::getWorkHour($work->work_start, strtotime(date('Y-m-d', time())));
+            $workHour = WorkService::getWorkHour($work->work_start, strtotime(date('Y-m-d', strtotime("-1 day"))));
             $work->work_end = time();
             $work->work_time = $workHour >= WorkService::$workHour ? WorkService::$workHour : $workHour;
             $work->work_extra = $workHour >= WorkService::$workHour ? $workHour - WorkService::$workHour : 0;
