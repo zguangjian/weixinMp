@@ -91,15 +91,11 @@ class WorkService
                 if (date('H') < self::$startHour) {
                     return sprintf("最早%t点开始打卡.", self::$startHour);
                 }
-                try {
-                    Work::create([
-                        'userid' => self::$userId,
-                        'work_start' => time(),
-                        'createDate' => date('Y-m-d')
-                    ]);
-                } catch (Exception $exception) {
-                    return $exception->getMessage();
-                }
+                Work::create([
+                    'userid' => self::$userId,
+                    'work_start' => time(),
+                    'createDate' => date('Y-m-d')
+                ]);
 
                 return "上班打卡成功,打卡时间为" . date('Y-m-d H:i:s');
             }
