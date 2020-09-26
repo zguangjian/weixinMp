@@ -105,7 +105,8 @@ class WorkService
             }
         } else {
             try {
-                if ($work) {
+                if ($work > 0) {
+                    $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->first();
                     $workHour = self::getWorkHour($work->work_start);
                     $work->work_end = time();
                     $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
