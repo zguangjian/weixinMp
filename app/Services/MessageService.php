@@ -41,7 +41,6 @@ class MessageService
 
     public static function text($message)
     {
-
         if ($key = array_search($message['Content'], self::$workType)) {
             return WorkService::word($key, self::$userId);
         } else {

@@ -38,9 +38,13 @@ class WorkService
      */
     protected static $startHour = 8;
 
+    /**
+     * @param $type
+     * @param $userid
+     * @return int|string
+     */
     public static function word($type, $userid)
     {
-
         self::$userId = $userid;
         switch ($type) {
             case 0 :
@@ -71,10 +75,14 @@ class WorkService
         }
     }
 
+    /**
+     * @param $type
+     * @return string
+     */
     public static function punchClock($type)
     {
 
-        $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->first();
+        $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->count();
 
         if ($type == 1) {
             if ($work) {
@@ -97,7 +105,6 @@ class WorkService
             }
         } else {
             try {
-
                 if ($work) {
                     $workHour = self::getWorkHour($work->work_start);
                     $work->work_end = time();
