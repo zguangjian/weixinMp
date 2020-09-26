@@ -82,10 +82,10 @@ class WorkService
     public static function punchClock($type)
     {
 
-        $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->count();
+        $work = Work::where(['userid' => self::$userId])->first();
 
         if ($type == 1) {
-            if ($work) {
+            if ($work && $work->createTime == date('Y-m-d')) {
                 return "今日上班已打卡";
             } else {
                 if (date('H') < self::$startHour) {
@@ -101,7 +101,7 @@ class WorkService
             }
         } else {
             try {
-                if ($work > 0) {
+                if ($work && $work->createDate == date('Y-m-d')) {
                     $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->first();
                     $workHour = self::getWorkHour($work->work_start);
                     $work->work_end = time();
@@ -109,9 +109,8 @@ class WorkService
                     $work->work_extra = $workHour >= self::$workHour ? $workHour - self::$workHour : 0;
                     $work->save();
                     return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
-                } else {
+                } else if ($work->createDate == date('Y-m-d')) {
                     //判断是否是昨日加班
-                    $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d', strtotime('-1 day'))])->first();
                     if ($work && $work->work_end == 0) {
                         $workHour = self::getWorkHour($work->work_start);
                         $work->work_end = time();
@@ -120,6 +119,7 @@ class WorkService
                         $work->save();
                         return "下班打卡成功！昨日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
                     }
+                } else {
                     return "请先打卡上班";
                 }
 
