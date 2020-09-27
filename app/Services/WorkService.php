@@ -10,6 +10,7 @@
 namespace App\Services;
 
 
+use App\Http\Communal\RedisManage;
 use App\Model\Work;
 use TheSeer\Tokenizer\Exception;
 
@@ -36,7 +37,7 @@ class WorkService
      * 起始打卡时间不能
      * @var int
      */
-    protected static $startHour = 8;
+    protected static $startHour = 7;
 
     /**
      * @param $type
@@ -82,24 +83,24 @@ class WorkService
     public static function punchClock($type)
     {
 
-        $work = Work::where(['userid' => self::$userId])->first();
 
         if ($type == 1) {
-            if ($work && $work->createTime == date('Y-m-d')) {
+            if (RedisManage::Work()->getHashData(self::$userId) == date('Y-m-d')) {
                 return "今日上班已打卡";
             } else {
                 if (date('H') < self::$startHour) {
-                    return sprintf("最早%t点开始打卡.", self::$startHour);
+                    return sprintf("最早%s点开始打卡.", self::$startHour);
                 }
                 Work::create([
                     'userid' => self::$userId,
                     'work_start' => time(),
                     'createDate' => date('Y-m-d')
                 ]);
-
+                RedisManage::Work()->getHashData(self::$userId, date('Y-m-d'));
                 return "上班打卡成功,打卡时间为" . date('Y-m-d H:i:s');
             }
         } else {
+            $work = Work::where(['userid' => self::$userId])->orderBy('id', 'desc')->first();
             try {
                 if ($work && $work->createDate == date('Y-m-d')) {
                     $work = Work::where(['userid' => self::$userId, 'createDate' => date('Y-m-d')])->first();

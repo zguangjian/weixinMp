@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Communal\CacheManage;
+use App\Http\Communal\RedisManage;
 use App\Services\MessageService;
 use EasyWeChat\Factory;
 use Illuminate\Http\Request;
@@ -14,6 +16,7 @@ class WechatController extends Controller
         'token' => 'weixin',
         'response_type' => 'array',
     ];
+
     public function serve(Request $request)
     {
 
@@ -27,36 +30,13 @@ class WechatController extends Controller
 
     public function user()
     {
-        $buttons = [
-            [
-                "type" => "click",
-                "name" => "今日歌曲",
-                "key" => "V1001_TODAY_MUSIC"
-            ],
-            [
-                "name" => "菜单",
-                "sub_button" => [
-                    [
-                        "type" => "view",
-                        "name" => "搜索",
-                        "url" => "http://www.soso.com/"
-                    ],
-                    [
-                        "type" => "view",
-                        "name" => "视频",
-                        "url" => "http://v.qq.com/"
-                    ],
-                    [
-                        "type" => "click",
-                        "name" => "赞一下我们",
-                        "key" => "V1001_GOOD"
-                    ],
-                ],
-            ],
-        ];
-        $app = Factory::officialAccount($this->config);
 
-
-        return $app->menu->create($buttons);
+        RedisManage::Work()->setHashData(1, 2);
+        $data = RedisManage::Work()->getHashData(1);
+        dd($data) ;
+        die;
+        $str = "{\"ToUserName\":\"gh_6927c252a950\",\"FromUserName\":\"oMTnz52O9IDZ6cyziKV2jeWZjEsY\",\"CreateTime\":\"1600157123\",\"MsgType\":\"text\",\"Content\":\"上班打卡\",\"MsgId\":\"22908745661902076\"}";
+        $message = json_decode($str, true);
+        return MessageService::send($message);
     }
 }
