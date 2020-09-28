@@ -96,7 +96,7 @@ class WorkService
                     'work_start' => time(),
                     'createDate' => date('Y-m-d')
                 ]);
-                RedisManage::Work()->getHashData(self::$userId, date('Y-m-d'));
+                RedisManage::Work()->setHashData(self::$userId, date('Y-m-d'));
                 return "上班打卡成功,打卡时间为" . date('Y-m-d H:i:s');
             }
         } else {

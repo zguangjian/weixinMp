@@ -49,13 +49,13 @@ class RedisManage
     }
 
     /**
-     * @param $userid
+     * @param $key
      * @param $data
      * @return mixed
      */
-    public function setHashData($userid, $data)
+    public function setHashData($key, $data)
     {
-        return Redis::hset($this->getHashDataKey(), $userid, $data);
+        return Redis::hset($this->getHashDataKey(), $key, $data);
     }
 
     /**

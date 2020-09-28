@@ -31,10 +31,6 @@ class WechatController extends Controller
     public function user()
     {
 
-        RedisManage::Work()->setHashData(1, 2);
-        $data = RedisManage::Work()->getHashData(1);
-        dd($data) ;
-        die;
         $str = "{\"ToUserName\":\"gh_6927c252a950\",\"FromUserName\":\"oMTnz52O9IDZ6cyziKV2jeWZjEsY\",\"CreateTime\":\"1600157123\",\"MsgType\":\"text\",\"Content\":\"上班打卡\",\"MsgId\":\"22908745661902076\"}";
         $message = json_decode($str, true);
         return MessageService::send($message);
