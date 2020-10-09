@@ -14,7 +14,8 @@
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "overtrue/wechat": "^4.2",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "y-ui/laravel-running-time": "1.1"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

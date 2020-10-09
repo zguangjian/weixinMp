@@ -110,7 +110,7 @@ class WorkService
                     $work->work_extra = $workHour >= self::$workHour ? $workHour - self::$workHour : 0;
                     $work->save();
                     return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
-                } else if ($work->createDate == date('Y-m-d')) {
+                } else if ($work->createDate == date('Y-m-d', strtotime("-1 day"))) {
                     //判断是否是昨日加班
                     if ($work && $work->work_end == 0) {
                         $workHour = self::getWorkHour($work->work_start);
@@ -141,7 +141,7 @@ class WorkService
         $hour = round((($endTime ?: time()) - $startTime) / 60 / 60, 2);
         //12点之前打卡 则扣除午间休息
         if (date('H', $startTime) < 12 && date('H', $startTime) >= self::$startHour) {
-            return $hour > self::$workHour ? $hour - self::$midday : $hour;
+            return $hour > self::$workHour ? round($hour - self::$midday, 2) : round($hour, 2);
         } else {
             return $hour;
         }
