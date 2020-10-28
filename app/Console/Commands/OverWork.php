@@ -44,16 +44,17 @@ class OverWork extends Command
 
     protected function overWork()
     {
-        $workList = Work::where(['createDate' => date('Y-m-d', strtotime('-1 day'))])->where(['work_end' => 0])->get();
+        $workList = Work::where(['createDate' => date('Y-m-d')])->where(['work_end' => 0])->get();
         /** @var Work $work */
 
         foreach ($workList as $work) {
-            $workHour = WorkService::getWorkHour($work->work_start, strtotime(date('Y-m-d', strtotime("-1 day"))));
+            $workHour = WorkService::getWorkHour($work->work_start, time());
             $work->work_end = time();
             $work->work_time = $workHour >= WorkService::$workHour ? WorkService::$workHour : $workHour;
             $work->work_extra = $workHour >= WorkService::$workHour ? $workHour - WorkService::$workHour : 0;
             $work->save();
         }
+        echo time();
     }
 
 }
