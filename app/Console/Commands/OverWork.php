@@ -44,7 +44,7 @@ class OverWork extends Command
 
     protected function overWork()
     {
-        $workList = Work::where(['createDate' => date('Y-m-d')])->where(['work_end' => 0])->get();
+        $workList = Work::where(['createDate' => date('Y-m-d')])->get();
         /** @var Work $work */
 
         foreach ($workList as $work) {
