@@ -54,7 +54,7 @@ class OverWork extends Command
             $work->work_extra = $workHour >= WorkService::$workHour ? $workHour - WorkService::$workHour : 0;
             $work->save();
         }
-        echo date('Y-m-d H:i:s');
+        echo date('Y-m-d H:i:s') . PHP_EOL;
     }
 
 }
