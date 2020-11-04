@@ -12,6 +12,7 @@ namespace App\Services;
 
 use App\Http\Communal\RedisManage;
 use App\Model\Work;
+use phpDocumentor\Reflection\Types\Self_;
 use TheSeer\Tokenizer\Exception;
 
 class WorkService
@@ -51,7 +52,7 @@ class WorkService
             case 0 :
                 return 1;
                 break;
-            case 1 || 2:
+            case $type == 1 || $type == 2:
                 return self::punchClock($type);
                 break;
             case 3 :
@@ -72,8 +73,16 @@ class WorkService
             case 8 :
                 echo 8;
                 break;
+            case 10:
+                return self::workList();
+                break;
             default;
         }
+    }
+
+    public static function workList()
+    {
+        return "点击进入<a href='" . url('/user', ['userid' => self::$userId]) . "'>个人中心</a>查看";
     }
 
     /**
@@ -82,8 +91,6 @@ class WorkService
      */
     public static function punchClock($type)
     {
-
-
         if ($type == 1) {
             if (RedisManage::Work()->getHashData(self::$userId) == date('Y-m-d')) {
                 return "今日上班已打卡";
@@ -112,7 +119,7 @@ class WorkService
                     return "下班打卡成功！今日工作" . $workHour . "小时，加班" . $work->work_extra . "小时";
                 } else if ($work->createDate == date('Y-m-d', strtotime("-1 day"))) {
                     //判断是否是昨日加班
-                    if ($work && $work->work_end == 0) {
+                    if ($work ) {
                         $workHour = self::getWorkHour($work->work_start);
                         $work->work_end = time();
                         $work->work_time = $workHour >= self::$workHour ? self::$workHour : $workHour;
