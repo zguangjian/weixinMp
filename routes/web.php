@@ -15,5 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('/wechat', 'WechatController@serve');
-Route::any('/user','WechatController@user');
+Route::any('/connect', 'WechatController@connect');
+Route::get("/menu", 'WechatController@menu');
+Route::get("/qrcode", 'WechatController@qrcode');
+
+//网页授权
+Route::get("/oauth", 'WechatController@oauth')->name('oauth');
+Route::get("/oauth_callback", 'WechatController@oauthCallback')->name('oauthCallback');
+Route::get("/shorten", 'WechatController@shorten');
+
